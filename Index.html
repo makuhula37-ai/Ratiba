@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Morning Radiance · Daily Routine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0d7c6 0%, #c9bc9f 100%);
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            color: #2e241f;
+        }
+
+        /* main container */
+        .routine-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 250, 240, 0.92);
+            backdrop-filter: blur(1px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header with sunrise charm */
+        .morning-header {
+            background: #fdebb3;
+            padding: 1.8rem 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #ffd98c;
+            position: relative;
+        }
+
+        .morning-header h1 {
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #b45f2b, #e07a3a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-block;
+            margin-bottom: 0.25rem;
+        }
+
+        .sun-icon {
+            font-size: 2.2rem;
+            vertical-align: middle;
+            margin-right: 8px;
+            display: inline-block;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.15));
+        }
+
+        .date-badge {
+            font-size: 0.85rem;
+            background: #fff1db;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            margin-top: 12px;
+            font-weight: 500;
+            color: #a5531e;
+            box-shadow: inset 0 0 0 1px #ffe0aa, 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .inspire-quote {
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 14px;
+            color: #7b583e;
+            font-weight: 450;
+        }
+
+        /* checklist area */
+        .activities-list {
+            padding: 1.8rem 2rem 2rem;
+        }
+
+        .activity-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 80px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.25rem 0.25rem 0.25rem 1.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f7e7cf;
+        }
+
+        .activity-item:hover {
+            transform: translateX(3px);
+            border-color: #efcd9b;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        /* custom checkbox */
+        .checkbox-custom {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-custom input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            background-color: #fff7ef;
+            border-radius: 50%;
+            border: 2px solid #e7c99b;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkmark:after {
+            content: "✓";
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #f5a65b;
+            opacity: 0;
+            transform: scale(0.7);
+            transition: 0.1s ease;
+        }
+
+        .checkbox-custom input:checked ~ .checkmark {
+            background-color: #fae6c3;
+            border-color: #e69347;
+        }
+
+        .checkbox-custom input:checked ~ .checkmark:after {
+            opacity: 1;
+            transform: scale(1);
+            color: #c96f2e;
+        }
+
+        .activity-text {
+            flex: 1;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #3d2b1f;
+            padding: 1rem 0.5rem 1rem 0;
+            letter-spacing: -0.2px;
+            transition: color 0.2s, text-decoration 0.2s;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            background: #f8efdf;
+            padding: 0.3rem 0.9rem;
+            border-radius: 50px;
+            font-weight: 500;
+            color: #b5622a;
+            margin-right: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* completed state */
+        .completed .activity-text {
+            text-decoration: line-through;
+            color: #9b8a74;
+        }
+
+        .completed .activity-time {
+            background: #e9dfcf;
+            color: #8b6f50;
+            text-decoration: none;
+        }
+
+        /* progress section */
+        .progress-section {
+            padding: 0 2rem 1.5rem 2rem;
+        }
+
+        .progress-bar-bg {
+            background: #eadbbc;
+            border-radius: 40px;
+            height: 12px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #f3b35b, #e68533);
+            width: 0%;
+            height: 100%;
+            border-radius: 40px;
+            transition: width 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 12px;
+            font-weight: 500;
+            color: #6e4f32;
+        }
+
+        .reset-btn {
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: #f1e4d2;
+            padding: 0.35rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #ad6433;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reset-btn:hover {
+            background-color: #e8d5bb;
+            color: #954f1f;
+            transform: scale(0.97);
+        }
+
+        /* motivational message */
+        .motivation-card {
+            background: #fdface;
+            margin: 0 2rem 2rem 2rem;
+            border-radius: 2rem;
+            padding: 1rem 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            border-left: 6px solid #f5aa55;
+            color: #4e341f;
+            font-weight: 500;
+        }
+
+        .motivation-icon {
+            font-size: 1.8rem;
+        }
+
+        /* footer */
+        .footer-note {
+            text-align: center;
+            padding: 1rem 2rem 1.6rem;
+            font-size: 0.7rem;
+            color: #a6845f;
+            border-top: 1px solid #f3e5d2;
+            background: #fffaf2;
+        }
+
+        @media (max-width: 550px) {
+            body {
+                padding: 1rem;
+            }
+            .activity-text {
+                font-size: 1rem;
+                padding: 0.8rem 0.2rem;
+            }
+            .activity-time {
+                font-size: 0.7rem;
+                margin-right: 0.3rem;
+            }
+            .activities-list {
+                padding: 1.5rem;
+            }
+            .morning-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* simple animation for fresh start */
+        @keyframes gentlePop {
+            0% { transform: scale(0.98); opacity: 0.7;}
+            100% { transform: scale(1); opacity: 1;}
+        }
+
+        .routine-container {
+            animation: gentlePop 0.4s ease-out;
+        }
+
+        button {
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+
+<div class="routine-container">
+    <div class="morning-header">
+        <div>
+            <span class="sun-icon">☀️</span>
+            <h1>Morning radiance</h1>
+        </div>
+        <div class="date-badge" id="currentDate"></div>
+        <div class="inspire-quote">✨ "Win the morning, win the day" ✨</div>
+    </div>
+
+    <div class="activities-list" id="activitiesList">
+        <!-- dynamic list from javascript -->
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-bar-bg">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="stats">
+            <span id="completionStats">0 / 0 completed</span>
+            <button class="reset-btn" id="resetBtn" aria-label="Reset all morning tasks">⟳ Reset all</button>
+        </div>
+    </div>
+
+    <div class="motivation-card" id="motivationMsg">
+        <div class="motivation-icon">🌿</div>
+        <div id="dynamicMessage">Start your day with intention — check each habit as you go!</div>
+    </div>
+
+    <div class="footer-note">
+        🕊️ Build consistency | small steps, bright mornings
+    </div>
+</div>
+
+<script>
+    // ----- Morning Activities Dataset -----
+    // each activity includes: id, label, recommendedTime (nice to have), default status
+    const MORNING_TASKS = [
+        { id: 1, label: "Wake up & hydrate (glass of water)", timeSuggestion: "🌅 6:30 AM", defaultChecked: false },
+        { id: 2, label: "Stretch / Light movement (5 min)", timeSuggestion: "🧘 6:45 AM", defaultChecked: false },
+        { id: 3, label: "Mindful breathing or meditation", timeSuggestion: "🌬️ 7:00 AM", defaultChecked: false },
+        { id: 4, label: "Review today’s top 3 priorities", timeSuggestion: "📋 7:15 AM", defaultChecked: false },
+        { id: 5, label: "Healthy breakfast & vitamins", timeSuggestion: "🍳 7:30 AM", defaultChecked: false },
+        { id: 6, label: "Personal hygiene & fresh clothes", timeSuggestion: "🚿 8:00 AM", defaultChecked: false },
+        { id: 7, label: "Read or listen to 10 mins inspiration", timeSuggestion: "📖 8:20 AM", defaultChecked: false },
+        { id: 8, label: "Plan / journal one grateful thought", timeSuggestion: "✍️ 8:40 AM", defaultChecked: false }
+    ];
+
+    // ----- Helper: load from localStorage or use defaults -----
+    let activitiesStatus = new Array(MORNING_TASKS.length).fill(false);
+
+    function loadStoredStatus() {
+        const stored = localStorage.getItem("morning_routine_status");
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length === MORNING_TASKS.length) {
+                    activitiesStatus = parsed.map(v => !!v);
+                    return;
+                }
+            } catch(e) { console.warn(e); }
+        }
+        // default: all false (fresh day)
+        activitiesStatus = MORNING_TASKS.map(() => false);
+    }
+
+    function saveStatus() {
+        localStorage.setItem("morning_routine_status", JSON.stringify(activitiesStatus));
+    }
+
+    // ----- render the activities list with checkboxes -----
+    const activitiesContainer = document.getElementById("activitiesList");
+    const progressFill = document.getElementById("progressFill");
+    const completionStatsSpan = document.getElementById("completionStats");
+    const dynamicMsgDiv = document.getElementById("dynamicMessage");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // motivational messages array based on progress
+    const motivationMessages = [
+        { range: [0, 0], msg: "🌱 Rise & shine! Every step counts — begin with the first habit." },
+        { range: [1, 2], msg: "💪 Great start! Small wins fuel big energy." },
+        { range: [3, 4], msg: "✨ You're building momentum — morning magic in action." },
+        { range: [5, 6], msg: "🌟 Almost there! Consistency is a superpower." },
+        { range: [7, 8], msg: "🏆 FANTASTIC! You've owned the morning — now conquer the day!" }
+    ];
+
+    function updateProgressAndMessage() {
+        const total = MORNING_TASKS.length;
+        const completedCount = activitiesStatus.filter(v => v === true).length;
+        const percent = (completedCount / total) * 100;
+        progressFill.style.width = `${percent}%`;
+        completionStatsSpan.innerText = `${completedCount} / ${total} completed`;
+
+        // choose dynamic message
+        let selectedMsg = motivationMessages.find(m => completedCount >= m.range[0] && completedCount <= m.range[1]);
+        if (!selectedMsg) selectedMsg = motivationMessages[motivationMessages.length-1];
+        // extra nuance for full completion
+        if (completedCount === total) {
+            dynamicMsgDiv.innerHTML = `🎉 Amazing! You've completed all morning activities. Ready to thrive! 🎉`;
+        } else {
+            dynamicMsgDiv.innerHTML = selectedMsg.msg;
+        }
+    }
+
+    function renderActivities() {
+        activitiesContainer.innerHTML = "";
+        MORNING_TASKS.forEach((task, idx) => {
+            const isChecked = activitiesStatus[idx];
+            const activityDiv = document.createElement("div");
+            activityDiv.className = `activity-item ${isChecked ? "completed" : ""}`;
+            
+            // checkbox structure
+            const checkWrap = document.createElement("div");
+            checkWrap.className = "checkbox-custom";
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `task_${task.id}`;
+            checkbox.checked = isChecked;
+            checkbox.addEventListener("change", (e) => {
+                // when toggling, update status
+                activitiesStatus[idx] = e.target.checked;
+                saveStatus();
+                renderActivities();    // re-render to reflect completed class & sync UI
+                // also update any extra soundless feedback (optional, but consistent)
+            });
+            const spanMark = document.createElement("span");
+            spanMark.className = "checkmark";
+            checkWrap.appendChild(checkbox);
+            checkWrap.appendChild(spanMark);
+            
+            const activityTextSpan = document.createElement("span");
+            activityTextSpan.className = "activity-text";
+            activityTextSpan.innerText = task.label;
+            
+            const timeSpan = document.createElement("span");
+            timeSpan.className = "activity-time";
+            timeSpan.innerText = task.timeSuggestion;
+            
+            activityDiv.appendChild(checkWrap);
+            activityDiv.appendChild(activityTextSpan);
+            activityDiv.appendChild(timeSpan);
+            
+            activitiesContainer.appendChild(activityDiv);
+        });
+        updateProgressAndMessage();
+    }
+
+    // reset all tasks to unchecked
+    function resetAllTasks() {
+        if (confirm("Reset all morning activities? Your progress will be cleared for a fresh start.")) {
+            activitiesStatus.fill(false);
+            saveStatus();
+            renderActivities();
+            // add a slight playful effect: scroll to top (optional gently)
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            // additional little positive feedback
+            const tempMsg = dynamicMsgDiv.innerHTML;
+            dynamicMsgDiv.innerHTML = "🔄 Reset completed! A new morning canvas awaits ✨";
+            setTimeout(() => {
+                if (activitiesStatus.every(v => v === false)) updateProgressAndMessage();
+                else updateProgressAndMessage();
+            }, 20);
+            setTimeout(() => {
+                if (dynamicMsgDiv) updateProgressAndMessage();
+            }, 1800);
+        }
+    }
+
+    // set current date in a pretty format
+    function setCurrentDate() {
+        const dateElem = document.getElementById("currentDate");
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formatted = now.toLocaleDateString(undefined, options);
+        dateElem.textContent = formatted;
+    }
+
+    // ----- Optional: auto-reset at 4 AM? Not doing auto-reset to avoid frustration, 
+    // but we can include a "new day fresh start" recommendation? 
+    // Actually we will add a smart check: show a little note if the date changed since last visit.
+    // For extra delight: check last saved date vs today, offer fresh start? but we keep it manual reset.
+    // However we implement a small "day freshness" detection: if user opens page on new day, show suggestion.
+    // But not forced reset — to respect saved state. But we can display a subtle tooltip via console? better not overcomplicate,
+    // but I'm adding a gentle "new day reminder" feature: compare stored date vs today, if mismatch and tasks left from yesterday? optional.
+    // We'll add feature to suggest reset if tasks all done already? I'll add a small banner logic? no, to stay minimalist but clever.
+    // Instead store last visit day in localStorage, and if new day, maybe we add a friendly hint near reset button? 
+    // I'll implement a subtle non-intrusive "fresh day tip".
+    
+    function checkNewDaySuggestion() {
+        const lastVisitDate = localStorage.getItem("morning_last_visit_date");
+        const today = new Date().toDateString();
+        if (lastVisitDate !== today) {
+            // It's a new day! (or first visit)
+            localStorage.setItem("morning_last_visit_date", today);
+            // check if any tasks completed? if some completed, show a hint for fresh reset
+            const anyCompleted = activitiesStatus.some(v => v === true);
+            if (anyCompleted) {
+                // display optional message in motivation card for 4 seconds without overriding main message permanently
+                const originalMsg = dynamicMsgDiv.innerHTML;
+                dynamicMsgDiv.innerHTML = "🌟 Good morning! It's a brand new day — consider tapping 'Reset all' for today's fresh routine! 🌟";
+                setTimeout(() => {
+                    // only revert if message hasn't been overwritten by progress updates
+                    if (dynamicMsgDiv.innerHTML.includes("brand new day") || dynamicMsgDiv.innerHTML.includes("consider tapping")) {
+                        updateProgressAndMessage();
+                    } else {
+                        // if progress triggered already keep it
+                    }
+                }, 4200);
+            }
+        } else {
+            // same day, no action needed
+        }
+    }
+
+    // Event listeners & initializations
+    function init() {
+        loadStoredStatus();
+        renderActivities();
+        setCurrentDate();
+        resetBtn.addEventListener("click", resetAllTasks);
+        // ensure storage sync if any external modification (just for reliability)
+        window.addEventListener("storage", (e) => {
+            if (e.key === "morning_routine_status") {
+                loadStoredStatus();
+                renderActivities();
+            }
+        });
+        // new day handling (just a friendly reminder)
+        checkNewDaySuggestion();
+        // additionally, if user wants to mark all quickly? we don't need mass complete to keep mindful.
+        // But extra polish: pressing reset with confirm is enough.
+    }
+    
+    init();
+</script>
+</body>
+</html>
